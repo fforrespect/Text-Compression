@@ -1,6 +1,6 @@
 from Meta.Process import get_freq_dict
 from Meta import Constants as c, File
-from Tree.HuffmanTree import TreeNode, save_tree
+from Tree.HuffmanTree import TreeNode
 
 
 def _sort_tree_nodes(tree_nodes: list[TreeNode]) -> list[TreeNode]:
@@ -30,5 +30,21 @@ def run() -> None:
 		# make sure the tree nodes list is sorted
 		tree_nodes = _sort_tree_nodes(tree_nodes)
 	
-	save_tree(tree_nodes[0])
+	addresses: dict[str, str] = {char: "" for char in char_freqs.keys()}
+	
+	def find_char(char: str, root: TreeNode):
+		if char == root.char:
+			return
 		
+		if char in root.children[0].char:
+			addresses[char] += "0"
+			find_char(char, root.children[0])
+		else:
+			addresses[char] += "1"
+			find_char(char, root.children[1])
+			
+	for char in char_freqs.keys():
+		find_char(char, tree_nodes[0])
+	
+	print(addresses)
+	
