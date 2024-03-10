@@ -4,10 +4,6 @@ from Meta import Constants as c, File
 from Tree.HuffmanTree import TreeNode
 
 
-def _sort_tree_nodes(tree_nodes: list[TreeNode]) -> list[TreeNode]:
-	return sorted(tree_nodes, key=lambda item: item.frequency)
-
-
 def _get_freq_dict(text: str) -> dict[str, int]:
 	char_freqs: dict[str, int] = {}
 	
@@ -21,6 +17,9 @@ def _get_freq_dict(text: str) -> dict[str, int]:
 
 
 def _create_tree(char_freqs: dict[str, int]) -> TreeNode:
+	def _sort_tree_nodes(tree_nodes_: list[TreeNode]) -> list[TreeNode]:
+		return sorted(tree_nodes_, key=lambda item: item.frequency)
+	
 	tree_nodes: list[TreeNode] = _sort_tree_nodes(
 		[TreeNode(char, freq)
 		 for char, freq in char_freqs.items()]
@@ -64,26 +63,27 @@ def _get_addresses(root_node: TreeNode, char_list: list[str]):
 	return addresses
 
 
+def _convert_file_to_bin(file_content: str, addresses: dict[str, str]) -> bytes:
+	# write the binary value to a string
+	binary_string: str = ""
+	
+	for char in file_content:
+		binary_string += addresses[char]
+	
+	# convert the string to an int
+	binary_int: int = int(binary_string, 2)
+	
+	# convert the int to bytes
+	return binary_int.to_bytes(ceil(len(binary_string)/8), byteorder='big')
+
+
 def run() -> None:
 	file_content: str = File.read(c.INPUT_FILE_PATH)
 	
 	char_freqs: dict[str, int] = _get_freq_dict(file_content)
 	root_node: TreeNode = _create_tree(char_freqs)
 	addresses: dict[str, str] = _get_addresses(root_node, list(char_freqs.keys()))
+	binary_bytes: bytes = _convert_file_to_bin(file_content, addresses)
 	
-	# write the binary value to a string
-	binary_string: str = ""
-	
-	for char in file_content:
-		binary_string += addresses[char]
-		
-	# convert the string to an int
-	binary_int: int = int(binary_string, 2)
-
-	# convert the int to bytes
-	binary_bytes: bytes = binary_int.to_bytes(ceil(len(binary_string)/8), byteorder='big')
-	
-	# Write the bytes to a binary file
 	File.write_bin(c.OUTPUT_FILE_PATH, binary_bytes)
-	
 	
