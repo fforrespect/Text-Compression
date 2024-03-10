@@ -1,6 +1,6 @@
 from Meta.Process import get_freq_dict
 from Meta import Constants as c, File
-from Tree.HuffmanTree import TreeNode
+from Tree.HuffmanTree import TreeNode, save_tree
 
 
 def _sort_tree_nodes(tree_nodes: list[TreeNode]) -> list[TreeNode]:
@@ -15,9 +15,6 @@ def run() -> None:
 		[TreeNode(char, freq)
 		 for char, freq in char_freqs.items()]
 	)
-
-	# for i in tree_nodes:
-	# 	print(i)
 	
 	while len(tree_nodes) > 1:
 		# get the two nodes with the smallest frequency
@@ -32,6 +29,6 @@ def run() -> None:
 		tree_nodes.remove(base_nodes[1])
 		# make sure the tree nodes list is sorted
 		tree_nodes = _sort_tree_nodes(tree_nodes)
-		
-	print(tree_nodes[0])
+	
+	save_tree(tree_nodes[0])
 		
